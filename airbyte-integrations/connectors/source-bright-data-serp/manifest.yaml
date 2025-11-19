@@ -1,0 +1,88 @@
+version: "0.1.0"
+
+definitions:
+  selector:
+    type: RecordSelector
+    extractor:
+      type: DpathExtractor
+      field_path: ["*"]
+
+  requester:
+    type: HttpRequester
+    name: bright_data_serp
+    url_base: "https://api.brightdata.com"
+    path: "request"
+    http_method: "POST"
+    authenticator:
+      type: BearerAuthenticator
+      api_token: "{{ config['api_key'] }}"
+    request_body_json:
+      zone: "{{ config['zone'] }}"
+      url: "{{ config['search_url'] }}"
+      format: "json"
+      method: "GET"
+      country: "{{ config['country'] }}"
+      data_format: "{{ config['data_format'] }}"
+
+  retriever:
+    type: SimpleRetriever
+    name: bright_data_serp_retriever
+    record_selector:
+      $ref: "#/definitions/selector"
+    requester:
+      $ref: "#/definitions/requester"
+
+  stream:
+    type: DeclarativeStream
+    name: serp_results
+    primary_key: "position"
+    retriever:
+      $ref: "#/definitions/retriever"
+
+  spec:
+    type: Spec
+    connection_specification:
+      $schema: http://json-schema.org/draft-07/schema#
+      title: Bright Data SERP Spec
+      type: object
+      required:
+        - api_key
+        - search_url
+        - zone
+      properties:
+        api_key:
+          type: string
+          title: API Key
+          description: Your Bright Data API Key. Get it from https://brightdata.com/cp/setting/users
+          airbyte_secret: true
+          order: 0
+        zone:
+          type: string
+          title: Zone Identifier
+          description: Zone identifier that defines your Bright Data product configuration. Manage zones at https://brightdata.com/cp/zones
+          default: "serp_api1"
+          order: 1
+        search_url:
+          type: string
+          title: Search URL
+          description: Complete target URL to scrape. Must include protocol (http/https) and be publicly accessible. Example: https://www.google.com/search?q=pizza
+          order: 2
+        country:
+          type: string
+          title: Country Code
+          description: Two-letter ISO 3166-1 country code for proxy location (e.g., us, gb, de, ca, au). If not specified, system auto-selects optimal location.
+          default: "us"
+          order: 3
+        data_format:
+          type: string
+          title: Data Format
+          description: Additional response format transformation. Options: markdown (converts HTML to markdown), screenshot (captures PNG image)
+          enum: ["markdown", "screenshot"]
+          order: 4
+
+streams:
+  - "#/definitions/stream"
+
+check:
+  type: CheckStream
+  stream_names: ["serp_results"]

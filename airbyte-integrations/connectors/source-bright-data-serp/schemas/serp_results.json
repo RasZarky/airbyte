@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "position": {
+      "type": "integer",
+      "description": "The ranking position of the search result"
+    },
+    "title": {
+      "type": "string",
+      "description": "The title of the search result"
+    },
+    "url": {
+      "type": "string",
+      "description": "The URL of the search result"
+    },
+    "display_url": {
+      "type": "string",
+      "description": "The displayed URL in the search results"
+    },
+    "description": {
+      "type": "string",
+      "description": "The description snippet of the search result"
+    },
+    "result_type": {
+      "type": "string",
+      "description": "Type of result (organic, paid, local, shopping)",
+      "enum": ["organic", "paid", "local", "shopping"]
+    },
+    "sitelinks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Additional links from the same site"
+    },
+    "rich_snippet": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
+        },
+        "review_count": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "string"
+        },
+        "availability": {
+          "type": "string"
+        }
+      },
+      "description": "Rich snippet data like ratings, prices, availability"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL of any associated image"
+    },
+    "search_url": {
+      "type": "string",
+      "description": "The original search URL that was queried"
+    },
+    "zone": {
+      "type": "string",
+      "description": "Bright Data zone identifier used for the request"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code used for the search"
+    },
+    "data_format": {
+      "type": "string",
+      "description": "Additional data format transformation applied"
+    },
+    "breadcrumb": {
+      "type": "string",
+      "description": "Breadcrumb navigation path"
+    },
+    "date": {
+      "type": "string",
+      "description": "Publication or date information"
+    }
+  },
+  "required": ["position", "title", "url", "result_type"]
+}

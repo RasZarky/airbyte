@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "source-bright-data-serp"
+version = "0.1.0"
+description = "Airbyte source connector for Bright Data SERP API"
+authors = ["Your Name <your.email@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+airbyte-cdk = ">=0.51.0"
+requests = "^2.28.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.0.0"
+pytest-mock = "^3.10.0"
+freezegun = "^1.2.0"
+pytest-cov = "^4.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

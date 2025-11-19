@@ -1,0 +1,33 @@
+data:
+  connectorType: source
+  definitionId: bright-data-serp
+  dockerImageTag: 0.1.0
+  dockerRepository: airbyte/source-bright-data-serp
+  documentationUrl: https://docs.airbyte.com/integrations/sources/bright-data-serp
+  githubIssueLabel: source-bright-data-serp
+  icon: bright-data.svg
+  license: MIT
+  name: Bright Data SERP
+  registries:
+    cloud:
+      enabled: false
+    oss:
+      enabled: true
+  supportLevel: community
+  tags:
+    - language:python
+    - keyword:serp
+    - keyword:search
+    - keyword:bright-data
+    - keyword:seo
+  connectorTestSuitesOptions:
+    - suite: unitTests
+    - suite: integrationTests
+    - suite: acceptanceTests
+      testSecrets:
+        - name: SECRET_SOURCE-BRIGHT-DATA-SERP_CREDS
+          fileName: config.json
+          secretStore:
+            type: GSM
+            alias: airbyte-connector-testing-secret-store
+metadataSpecVersion: "1.0"
