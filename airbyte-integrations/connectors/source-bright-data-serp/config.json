@@ -1,0 +1,7 @@
+{
+  "api_key": "8d6e4d1c20c89d26cd89a4a4e32bda872dbc1c0c39582c6a9c14ab978aa312cd",
+  "zone": "serp_api1",
+  "search_queries": ["pizza", "restaurants near me", "food delivery"],
+  "country": "us",
+  "format": "json"
+}

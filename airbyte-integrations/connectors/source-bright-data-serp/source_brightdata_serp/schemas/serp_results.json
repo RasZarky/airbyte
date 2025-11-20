@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "search_query": {
+      "type": "string",
+      "description": "The search query that was executed"
+    },
+    "status_code": {
+      "type": "integer",
+      "description": "HTTP status code of the response"
+    },
+    "url": {
+      "type": "string",
+      "description": "The URL that was scraped"
+    },
+    "zone": {
+      "type": "string",
+      "description": "Bright Data zone used for the request"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code used for the proxy location"
+    },
+    "response_headers": {
+      "type": "object",
+      "description": "HTTP headers from the response",
+      "properties": {
+        "content-type": { "type": "string" },
+        "date": { "type": "string" },
+        "server": { "type": "string" }
+      }
+    },
+    "serp_data": {
+      "type": "object",
+      "description": "SERP data including HTML content",
+      "properties": {
+        "html_content": {
+          "type": "string",
+          "description": "Raw HTML content of the search results"
+        },
+        "content_length": {
+          "type": "integer",
+          "description": "Length of the HTML content"
+        },
+        "headers": {
+          "type": "object",
+          "description": "Headers from the original response"
+        }
+      }
+    }
+  }
+}

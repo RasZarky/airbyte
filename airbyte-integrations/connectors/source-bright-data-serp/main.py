@@ -1,84 +1,114 @@
-#!/usr/bin/env python
 # Copyright (c) 2025 Airbyte, Inc., all rights reserved.
-
 
 import json
 import logging
 import sys
-from pathlib import Path
 
-from source_bright_data_serp import SourceBrightDataSerp
+from source_brightdata_serp.source import SourceBrightDataSerp
 
-
-# Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
+from airbyte_cdk.models import SyncMode
 
 
 def main():
-    """
-    Main entry point for local execution of the Bright Data SERP connector.
-    """
-    source = SourceBrightDataSerp()
-
-    # Parse command line arguments
     if len(sys.argv) < 2:
-        print("Usage: python main.py <command> [options]")
-        print("Commands: check, discover, read")
-        sys.exit(1)
+        print("Usage: python main.py <command> [--config config.json] [--catalog catalog.json]")
+        print("Commands: check, read")
+        return
 
     command = sys.argv[1]
+    source = SourceBrightDataSerp()
 
-    try:
-        if command == "check":
-            # Check connection
-            config_path = "secrets/config.json" if len(sys.argv) < 3 else sys.argv[2]
-            with open(config_path, "r") as f:
-                config = json.load(f)
+    if command == "check":
+        if "--config" in sys.argv:
+            config_index = sys.argv.index("--config") + 1
+            if config_index < len(sys.argv):
+                with open(sys.argv[config_index], "r") as f:
+                    config = json.load(f)
 
-            result, message = source.check_connection(logger, config)
-            if result:
-                print("Connection check: SUCCESS")
-                sys.exit(0)
+                success, message = source.check_connection(logging.getLogger(), config)
+                if success:
+                    print("Connection check: SUCCESS")
+                else:
+                    print(f"Connection check: FAILED - {message}")
             else:
-                print(f"Connection check: FAILED - {message}")
-                sys.exit(1)
-
-        elif command == "discover":
-            # Discover schema
-            config_path = "secrets/config.json" if len(sys.argv) < 3 else sys.argv[2]
-            with open(config_path, "r") as f:
-                config = json.load(f)
-
-            catalog = source.discover(logger, config)
-            print(json.dumps(catalog.to_json(), indent=2))
-
-        elif command == "read":
-            # Read data
-            if len(sys.argv) < 4:
-                print("Usage: python main.py read <config_path> <catalog_path>")
-                sys.exit(1)
-
-            config_path = sys.argv[2]
-            catalog_path = sys.argv[3]
-
-            with open(config_path, "r") as f:
-                config = json.load(f)
-            with open(catalog_path, "r") as f:
-                catalog = json.load(f)
-
-            # Read and print records
-            for message in source.read(logger, config, catalog):
-                print(json.dumps(message.to_json(), indent=2))
-
+                print("Missing config file path after --config")
         else:
-            print(f"Unknown command: {command}")
-            print("Available commands: check, discover, read")
-            sys.exit(1)
+            print("Missing --config parameter")
 
-    except Exception as e:
-        logger.error(f"Error executing command '{command}': {str(e)}")
-        sys.exit(1)
+    elif command == "read":
+        config = None
+        catalog = None
+
+        # Parse config file
+        if "--config" in sys.argv:
+            config_index = sys.argv.index("--config") + 1
+            if config_index < len(sys.argv):
+                with open(sys.argv[config_index], "r") as f:
+                    config = json.load(f)
+            else:
+                print("Missing config file path after --config")
+                return
+
+        # Parse catalog file
+        if "--catalog" in sys.argv:
+            catalog_index = sys.argv.index("--catalog") + 1
+            if catalog_index < len(sys.argv):
+                with open(sys.argv[catalog_index], "r") as f:
+                    catalog = json.load(f)
+            else:
+                print("Missing catalog file path after --catalog")
+                return
+
+        if config and catalog:
+            print("Reading data from Bright Data SERP API...")
+
+            # Get the streams
+            streams = source.streams(config)
+
+            for stream in streams:
+                print(f"\n=== Reading from stream: {stream.name} ===")
+                record_count = 0
+
+                try:
+                    # Get stream slices first
+                    slices = list(stream.stream_slices(sync_mode=SyncMode.full_refresh))
+                    print(f"Number of slices: {len(slices)}")
+
+                    for slice_data in slices:
+                        print(f"Processing slice: {slice_data}")
+
+                        # Read records for each slice
+                        for record in stream.read_records(sync_mode=SyncMode.full_refresh, stream_slice=slice_data, stream_state={}):
+                            record_count += 1
+                            print(f"\n--- Record {record_count} ---")
+                            print(f"Search Query: {record.get('search_query')}")
+                            print(f"Status Code: {record.get('status_code')}")
+                            print(f"URL: {record.get('url')}")
+                            print(f"Zone: {record.get('zone')}")
+                            print(f"Country: {record.get('country')}")
+
+                            # Show a preview of the SERP data
+                            serp_data = record.get("serp_data", {})
+                            if serp_data:
+                                html_content = serp_data.get("html_content", "")
+                                print(f"HTML Content Length: {len(html_content)} characters")
+                                if html_content:
+                                    print("First 200 chars of HTML:")
+                                    print(html_content[:200] + "...")
+
+                    print(f"\n✅ Successfully read {record_count} records from {stream.name}")
+
+                except Exception as e:
+                    print(f"❌ Error reading from stream {stream.name}: {str(e)}")
+                    import traceback
+
+                    traceback.print_exc()
+        else:
+            print("Missing --config or --catalog parameter for read command")
+
+    else:
+        print(f"Unknown command: {command}")
+        print("Available commands: check, read")
 
 
 if __name__ == "__main__":

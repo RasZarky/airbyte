@@ -1,0 +1,56 @@
+{
+  "documentationUrl": "https://docs.airbyte.com/integrations/sources/brightdata-serp",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Bright Data SERP Spec",
+    "type": "object",
+    "required": ["api_key", "zone", "search_queries"],
+    "properties": {
+      "api_key": {
+        "type": "string",
+        "title": "API Key",
+        "description": "Your Bright Data API Key",
+        "airbyte_secret": true,
+        "order": 0
+      },
+      "zone": {
+        "type": "string",
+        "title": "Zone",
+        "description": "Bright Data zone identifier (e.g., serp_api1)",
+        "default": "serp_api1",
+        "order": 1
+      },
+      "search_queries": {
+        "type": "array",
+        "title": "Search Queries",
+        "description": "List of search queries to scrape",
+        "items": {
+          "type": "string"
+        },
+        "order": 2
+      },
+      "country": {
+        "type": "string",
+        "title": "Country Code",
+        "description": "Two-letter ISO country code for proxy location (e.g., us, gb, de)",
+        "default": "us",
+        "order": 3
+      },
+      "format": {
+        "type": "string",
+        "title": "Response Format",
+        "description": "Response format",
+        "enum": ["json", "raw"],
+        "default": "json",
+        "order": 4
+      },
+      "data_format": {
+        "type": "string",
+        "title": "Data Format",
+        "description": "Additional response format transformation",
+        "enum": ["markdown", "screenshot"],
+        "order": 5
+      }
+    }
+  }
+}

@@ -1,40 +1,116 @@
 # Bright Data SERP Source Connector
 
-This connector extracts search engine results from major search engines including Google, Bing, Yandex, DuckDuckGo, and more using the [Bright Data SERP API](https://docs.brightdata.com/api-reference/serp-api).
+A lightweight Airbyte source connector that extracts search engine results using Bright Data's SERP API. Use it to collect structured SERP data for analytics and pipelines.
 
 ## Features
+- Full refresh sync mode
+- Structured JSON extraction (organic, paid, related searches, metadata)
+- Configurable country/proxy zone
+- Support for JSON, raw HTML, markdown, screenshots
+- Retries and exponential backoff for rate limits and server errors
 
-- Extract organic search results, paid ads, local listings, and shopping results
-- Support for multiple search engines (Google, Bing, Yandex, DuckDuckGo, etc.)
-- Configurable country targeting
-- Structured JSON output with rich metadata
-- Support for markdown conversion and screenshot capture
+## Prerequisites
+- Bright Data account with SERP API access
+- Bright Data API key
+- Zone identifier (e.g., `serp_api1`)
+- Python 3.8+
 
-## Setup Guide
+## Quick start
 
-### Prerequisites
+Install dependencies (poetry recommended):
 
-1. **Bright Data Account**: You need a Bright Data account with SERP API access
-2. **API Key**: Obtain your API key from [Bright Data settings](https://brightdata.com/cp/setting/users)
-3. **Zone Configuration**: Set up your SERP zone in the [Bright Data control panel](https://brightdata.com/cp/zones)
+```bash
+poetry install
+# or with pip
+pip install airbyte-cdk requests
+```
 
-### Configuration
+Test connection / run connector:
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `api_key` | string | Yes | Your Bright Data API Key |
-| `zone` | string | Yes | Zone identifier (default: "serp_api1") |
-| `search_url` | string | Yes | Complete search URL to scrape |
-| `country` | string | No | Two-letter country code (default: "us") |
-| `data_format` | string | No | Additional format: "markdown" or "screenshot" |
+```bash
+# Test connection
+poetry run source-brightdata-serp check --config config.json
 
-### Example Configuration
+# Discover streams and schema
+poetry run source-brightdata-serp discover --config config.json
+
+# Read data
+poetry run source-brightdata-serp read --config config.json --catalog catalog.json
+```
+
+## Configuration
+
+Example `config.json`:
 
 ```json
 {
-  "api_key": "your_bright_data_api_key",
+  "api_key": "your_brightdata_api_key",
   "zone": "serp_api1",
-  "search_url": "https://www.google.com/search?q=artificial+intelligence",
+  "search_queries": [
+    "data integration",
+    "airbyte tutorial",
+    "ETL best practices"
+  ],
   "country": "us",
-  "data_format": "json"
+  "format": "json"
 }
+```
+
+Configuration parameters:
+- `api_key` (string, required) — Bright Data API key
+- `zone` (string, required) — Bright Data zone (default: `serp_api1`)
+- `search_queries` (array of strings, required) — list of queries to fetch
+- `country` (string, optional) — two-letter country code (default: `us`)
+- `format` (string, optional) — `json` or `raw`
+
+## API endpoint
+
+Endpoint: `https://api.brightdata.com/serp/req`  
+Method: POST  
+Auth: Bearer token (API key)  
+Content-Type: `application/json`
+
+Example request payload:
+
+```json
+{
+  "zone": "serp_api1",
+  "url": "https://www.google.com/search?q=example+search",
+  "format": "json",
+  "country": "us"
+}
+```
+
+## Supported streams
+
+- `serp_results` — each record contains:
+  - `query` — original search query
+  - `timestamp` — collection time (ISO 8601)
+  - `organic_results` — array of organic results
+  - `paid_results` — array of paid/ad results
+  - `related_searches` — array of related terms
+  - `search_metadata` — metadata about the request
+
+## Error handling & rate limits
+- HTTP 429: automatic retry with backoff
+- HTTP 401: authentication error — validate API key
+- HTTP 5xx: retries with exponential backoff
+Tune concurrency and request rate according to your Bright Data plan.
+
+## File structure (project)
+brightdata-serp-connector/
+- source_brightdata_serp/
+  - __init__.py
+  - source.py
+  - schemas/
+  - ...
+- pyproject.toml
+- README.md
+- config.json
+
+## Troubleshooting
+- Authentication failed: verify API key and account status
+- Rate limit exceeded: reduce concurrency or contact Bright Data support
+- Invalid zone: confirm zone identifier in Bright Data control panel
+
+
