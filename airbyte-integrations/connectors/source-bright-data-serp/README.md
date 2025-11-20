@@ -128,7 +128,7 @@ brightdata-serp-connector/
 
 
 
-##More Details
+# More Details
 Here's a detailed explanation of what each file does in your Bright Data SERP connector project:
 
 ## **Core Connector Files**
