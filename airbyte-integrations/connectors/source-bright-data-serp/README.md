@@ -29,6 +29,17 @@ Test connection / run connector:
 
 ```bash
 # Test connection
+python main.py check --config config.json --catalog catalog.json
+
+# Read data
+python main.py read --config config.json --catalog catalog.json
+
+# Debug mode
+python debug_read.py
+
+#OR
+
+# Test connection
 poetry run source-brightdata-serp check --config config.json
 
 # Discover streams and schema
@@ -36,6 +47,7 @@ poetry run source-brightdata-serp discover --config config.json
 
 # Read data
 poetry run source-brightdata-serp read --config config.json --catalog catalog.json
+
 ```
 
 ## Configuration
