@@ -1,0 +1,5 @@
+{
+  "api_key": "invalid_key",
+  "zone": "invalid_zone",
+  "search_queries": ["test query"]
+}

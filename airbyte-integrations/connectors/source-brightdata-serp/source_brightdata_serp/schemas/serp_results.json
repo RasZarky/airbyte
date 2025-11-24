@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "search_query": {
+      "type": "string",
+      "description": "The original search query"
+    },
+    "status_code": {
+      "type": "integer",
+      "description": "HTTP status code of the response"
+    },
+    "url": {
+      "type": "string",
+      "description": "The URL that was requested"
+    },
+    "zone": {
+      "type": "string",
+      "description": "Bright Data zone used for the request"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code for proxy location"
+    },
+    "serp_data": {
+      "type": "object",
+      "properties": {
+        "html_content": {
+          "type": "string",
+          "description": "Raw HTML content of the SERP"
+        },
+        "content_length": {
+          "type": "integer",
+          "description": "Length of the HTML content"
+        },
+        "headers": {
+          "type": "object",
+          "description": "Response headers from the SERP request"
+        }
+      }
+    },
+    "response_headers": {
+      "type": "object",
+      "description": "Headers from the Bright Data API response"
+    }
+  }
+}

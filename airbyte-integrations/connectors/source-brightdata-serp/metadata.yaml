@@ -1,0 +1,30 @@
+data:
+  ab_internal:
+    ql: 100
+    sl: 100
+  allowedHosts:
+    hosts:
+      - api.brightdata.com
+  connectorBuildOptions:
+    baseImage: docker.io/airbyte/python-connector-base:4.0.2@sha256:9fdb1888c4264cf6fee473649ecb593f56f58e5d0096a87ee0b231777e2e3e73
+  connectorSubtype: api
+  connectorType: source
+  definitionId: brightdata-serp
+  dockerImageTag: 0.1.0
+  dockerRepository: airbyte/source-brightdata-serp
+  documentationUrl: https://docs.airbyte.com/integrations/sources/brightdata-serp
+  githubIssueLabel: source-brightdata-serp
+  icon: brightdata.svg
+  license: ELv2
+  name: Bright Data SERP
+  registryOverrides:
+    cloud:
+      enabled: true
+    oss:
+      enabled: true
+  releaseStage: alpha
+  supportLevel: community
+  tags:
+    - language:python
+    - cdk:low-code
+metadataSpecVersion: "1.0"
