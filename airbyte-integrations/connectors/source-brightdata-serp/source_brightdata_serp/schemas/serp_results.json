@@ -1,47 +1,75 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
+  "$schema": "http://json-schema.org/schema#",
+  "additionalProperties": true,
   "properties": {
-    "search_query": {
-      "type": "string",
-      "description": "The original search query"
+    "body": {
+      "type": ["string", "null"]
+    },
+    "headers": {
+      "properties": {
+        "accept-ch": {
+          "type": ["string", "null"]
+        },
+        "alt-svc": {
+          "type": ["string", "null"]
+        },
+        "cache-control": {
+          "type": ["string", "null"]
+        },
+        "connection": {
+          "type": ["string", "null"]
+        },
+        "content-security-policy": {
+          "type": ["string", "null"]
+        },
+        "content-type": {
+          "type": ["string", "null"]
+        },
+        "cross-origin-opener-policy": {
+          "type": ["string", "null"]
+        },
+        "date": {
+          "type": ["string", "null"]
+        },
+        "expires": {
+          "type": ["string", "null"]
+        },
+        "permissions-policy": {
+          "type": ["string", "null"]
+        },
+        "report-to": {
+          "type": ["string", "null"]
+        },
+        "server": {
+          "type": ["string", "null"]
+        },
+        "set-cookie": {
+          "items": {
+            "type": ["string", "null"]
+          },
+          "type": ["array", "null"]
+        },
+        "strict-transport-security": {
+          "type": ["string", "null"]
+        },
+        "transfer-encoding": {
+          "type": ["string", "null"]
+        },
+        "x-frame-options": {
+          "type": ["string", "null"]
+        },
+        "x-unblocker-redirected-to": {
+          "type": ["string", "null"]
+        },
+        "x-xss-protection": {
+          "type": ["string", "null"]
+        }
+      },
+      "type": ["object", "null"]
     },
     "status_code": {
-      "type": "integer",
-      "description": "HTTP status code of the response"
-    },
-    "url": {
-      "type": "string",
-      "description": "The URL that was requested"
-    },
-    "zone": {
-      "type": "string",
-      "description": "Bright Data zone used for the request"
-    },
-    "country": {
-      "type": "string",
-      "description": "Country code for proxy location"
-    },
-    "serp_data": {
-      "type": "object",
-      "properties": {
-        "html_content": {
-          "type": "string",
-          "description": "Raw HTML content of the SERP"
-        },
-        "content_length": {
-          "type": "integer",
-          "description": "Length of the HTML content"
-        },
-        "headers": {
-          "type": "object",
-          "description": "Response headers from the SERP request"
-        }
-      }
-    },
-    "response_headers": {
-      "type": "object",
-      "description": "Headers from the Bright Data API response"
+      "type": ["number", "null"]
     }
-  }
+  },
+  "type": "object"
 }
