@@ -34,6 +34,9 @@
         "expires": {
           "type": ["string", "null"]
         },
+        "p3p": {
+          "type": ["string", "null"]
+        },
         "permissions-policy": {
           "type": ["string", "null"]
         },
@@ -67,9 +70,13 @@
       },
       "type": ["object", "null"]
     },
+    "search_query": {
+      "type": "string"
+    },
     "status_code": {
       "type": ["number", "null"]
     }
   },
+  "required": ["search_query"],
   "type": "object"
 }

@@ -1,30 +1,32 @@
-version: "0.61.2"
+version: 0.61.2
+
 type: DeclarativeSource
+
 check:
   type: CheckStream
   stream_names:
-    - serp_results
-definitions:
-  selector:
-    type: RecordSelector
-    extractor:
-      type: DpathExtractor
-      field_path: []
+    - Brightdata serp - from cdk
+
 streams:
   - type: DeclarativeStream
-    name: serp_results
-    primary_key:
-      - search_query
+    name: Brightdata serp - from cdk
     retriever:
       type: SimpleRetriever
       requester:
         type: HttpRequester
-        url_base: https://api.brightdata.com/
-        path: "request"
+        url: https://api.brightdata.com/request
         http_method: POST
-        request_parameters: {}
-        request_headers:
-          Content-Type: "application/json"
+        request_body:
+          type: RequestBodyJsonObject
+          value:
+            url: >-
+              https://www.google.com/search?q={{
+              stream_slice['search_query'].replace(' ', '+') }}
+            zone: "{{ config['zone'] }}"
+            format: "{{ config.get('format', 'json') }}"
+            method: GET
+            country: "{{ config.get('country', 'us') }}"
+            data_format: "{{ config.get('data_format') }}"
         authenticator:
           type: BearerAuthenticator
           api_token: "{{ config['api_key'] }}"
@@ -34,14 +36,10 @@ streams:
             - type: DefaultErrorHandler
               backoff_strategies:
                 - type: ExponentialBackoffStrategy
-                  factor: 5.0
-        request_body_json:
-          zone: "{{ config['zone'] }}"
-          url: "https://www.google.com/search?q={{ stream_slice['search_query'].replace(' ', '+') }}"
-          format: "{{ config.get('format', 'json') }}"
-          method: "GET"
-          country: "{{ config.get('country', 'us') }}"
-          data_format: "{{ config.get('data_format') }}"
+                  factor: 5
+        request_headers:
+          Content-Type: application/json
+        request_parameters: {}
       record_selector:
         type: RecordSelector
         extractor:
@@ -51,55 +49,197 @@ streams:
         type: ListPartitionRouter
         values: "{{ config['search_queries'] }}"
         cursor_field: search_query
+    transformations:
+      - type: AddFields
+        fields:
+          - path: ["search_query"]
+            value: "{{ stream_slice['search_query'] }}"
+    primary_key:
+      - search_query
+    schema_loader:
+      type: InlineSchemaLoader
+      schema:
+        type: object
+        $schema: http://json-schema.org/schema#
+        properties:
+          search_query:
+            type: string
+          status_code:
+            type:
+              - number
+              - "null"
+          headers:
+            type:
+              - object
+              - "null"
+            properties:
+              accept-ch:
+                type:
+                  - string
+                  - "null"
+              alt-svc:
+                type:
+                  - string
+                  - "null"
+              cache-control:
+                type:
+                  - string
+                  - "null"
+              content-security-policy:
+                type:
+                  - string
+                  - "null"
+              content-type:
+                type:
+                  - string
+                  - "null"
+              cross-origin-opener-policy:
+                type:
+                  - string
+                  - "null"
+              date:
+                type:
+                  - string
+                  - "null"
+              expires:
+                type:
+                  - string
+                  - "null"
+              permissions-policy:
+                type:
+                  - string
+                  - "null"
+              report-to:
+                type:
+                  - string
+                  - "null"
+              server:
+                type:
+                  - string
+                  - "null"
+              strict-transport-security:
+                type:
+                  - string
+                  - "null"
+              x-frame-options:
+                type:
+                  - string
+                  - "null"
+              x-xss-protection:
+                type:
+                  - string
+                  - "null"
+              x-unblocker-redirected-to:
+                type:
+                  - string
+                  - "null"
+              connection:
+                type:
+                  - string
+                  - "null"
+              transfer-encoding:
+                type:
+                  - string
+                  - "null"
+              p3p:
+                type:
+                  - string
+                  - "null"
+              set-cookie:
+                type:
+                  - array
+                  - "null"
+                items:
+                  type:
+                    - string
+                    - "null"
+              no-vary-search:
+                type:
+                  - string
+                  - "null"
+          body:
+            type:
+              - string
+              - "null"
+        required:
+          - search_query
+        additionalProperties: true
+
 spec:
+  type: Spec
   connection_specification:
-    $schema: http://json-schema.org/draft-07/schema#
     type: object
+    $schema: http://json-schema.org/draft-07/schema#
     required:
       - api_key
       - zone
       - search_queries
     properties:
-      api_key:
-        type: string
-        title: API Key
-        description: Your Bright Data API Key
-        airbyte_secret: true
-        order: 0
       zone:
         type: string
-        title: Zone
         description: Bright Data zone identifier (e.g., serp_api1)
-        default: serp_api1
         order: 1
-      search_queries:
-        type: array
-        title: Search Queries
-        description: List of search queries to scrape
-        items:
-          type: string
-        order: 2
-      country:
-        type: string
-        title: Country Code
-        description: Two-letter ISO country code for proxy location (e.g., us, gb, de)
-        default: us
-        order: 3
+        title: Zone
+        default: serp_api1
       format:
         type: string
-        title: Response Format
         description: Response format
         enum:
           - json
           - raw
-        default: json
         order: 4
+        title: Response Format
+        default: json
+      api_key:
+        type: string
+        description: Your Bright Data API Key
+        order: 0
+        title: API Key
+        airbyte_secret: true
+      country:
+        type: string
+        description: Two-letter ISO country code for proxy location (e.g., us, gb, de)
+        order: 3
+        title: Country Code
+        default: us
       data_format:
         type: string
-        title: Data Format
         description: Additional response format transformation
         enum:
           - markdown
           - screenshot
         order: 5
-  type: Spec
+        title: Data Format
+      search_queries:
+        type: array
+        description: List of search queries to scrape
+        items:
+          type: string
+        order: 2
+        title: Search Queries
+
+metadata:
+  testedStreams:
+    Brightdata serp - from cdk:
+      isStale: true
+      hasRecords: true
+      streamHash: bfa436dc64fe88a90480e34bf8bfa0de23ec3d1f
+      hasResponse: true
+      primaryKeysAreUnique: false
+      primaryKeysArePresent: false
+      responsesAreSuccessful: true
+  autoImportSchema:
+    Brightdata serp - from cdk: true
+  applied_migrations:
+    - migration: HttpRequesterUrlBaseToUrl
+      to_version: "*"
+      migrated_at: "2025-11-24T22:55:14.886298+00:00"
+      from_version: 0.61.2
+    - migration: HttpRequesterPathToUrl
+      to_version: "*"
+      migrated_at: "2025-11-24T22:55:14.886574+00:00"
+      from_version: 0.61.2
+    - migration: HttpRequesterRequestBodyJsonDataToRequestBody
+      to_version: "*"
+      migrated_at: "2025-11-24T22:55:14.886754+00:00"
+      from_version: 0.61.2
