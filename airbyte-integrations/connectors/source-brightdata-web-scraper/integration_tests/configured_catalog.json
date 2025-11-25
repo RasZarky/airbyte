@@ -1,0 +1,106 @@
+{
+  "streams": [
+    {
+      "stream": {
+        "name": "web_scraper_results",
+        "json_schema": {
+          "$schema": "http://json-schema.org/schema#",
+          "type": "object",
+          "properties": {
+            "snapshot_id": {
+              "type": "string",
+              "description": "Unique identifier for the data snapshot"
+            },
+            "url": {
+              "type": "string",
+              "description": "Original URL that was scraped"
+            },
+            "id": {
+              "type": "string",
+              "description": "Unique identifier from scraped data"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Collection timestamp"
+            },
+            "data": {
+              "type": "object",
+              "description": "Complete scraped data structure",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "country_code": {
+                  "type": "string"
+                },
+                "position": {
+                  "type": "string"
+                },
+                "about": {
+                  "type": "string"
+                },
+                "current_company": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "company_id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "location": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "experience": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "education": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "skills": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "recommendations_count": {
+                  "type": "integer"
+                },
+                "connections": {
+                  "type": "integer"
+                },
+                "followers": {
+                  "type": "integer"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "required": ["snapshot_id", "url"]
+        },
+        "supported_sync_modes": ["full_refresh"],
+        "source_defined_primary_key": [["id"]]
+      },
+      "sync_mode": "full_refresh",
+      "destination_sync_mode": "overwrite"
+    }
+  ]
+}

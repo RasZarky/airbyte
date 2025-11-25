@@ -1,0 +1,107 @@
+documentationUrl: https://docs.airbyte.com/integrations/sources/brightdata-web-scraper
+connectionSpecification:
+  $schema: http://json-schema.org/draft-07/schema#
+  title: Bright Data Web Scraper Spec
+  type: object
+  required:
+    - api_key
+    - dataset_id
+    - urls
+  additionalProperties: false
+  properties:
+    api_key:
+      type: string
+      title: API Key
+      description: Your Bright Data API Key
+      airbyte_secret: true
+      order: 0
+    dataset_id:
+      type: string
+      title: Dataset ID
+      description: Dataset ID for which data collection is triggered
+      order: 1
+      example: gd_l1vikfnt1wgvvqz95w
+    urls:
+      type: array
+      title: URLs
+      description: List of URLs to scrape
+      items:
+        type: string
+      order: 2
+      example:
+        - https://www.linkedin.com/in/example1
+        - https://www.linkedin.com/in/example2
+    custom_output_fields:
+      type: string
+      title: Custom Output Fields
+      description: Filter response data to include only specified fields (pipe-separated)
+      order: 3
+      example: url|about.updated_on
+    type:
+      type: string
+      title: Collection Type
+      description: 'Set to "discover_new" to trigger collection with discovery phase'
+      enum:
+        - discover_new
+      order: 4
+    discover_by:
+      type: string
+      title: Discover By
+      description: Method for discovering new data
+      enum:
+        - keyword
+        - best_sellers_url
+        - category_url
+        - location
+      order: 5
+    include_errors:
+      type: boolean
+      title: Include Errors
+      description: Include errors report with results
+      default: false
+      order: 6
+    limit_per_input:
+      type: integer
+      title: Limit Per Input
+      description: Limit number of results per input
+      minimum: 1
+      order: 7
+    limit_multiple_results:
+      type: integer
+      title: Limit Multiple Results
+      description: Limit total number of results
+      minimum: 1
+      order: 8
+    notify:
+      type: boolean
+      title: Notify
+      description: Enable notifications upon completion
+      default: false
+      order: 9
+    endpoint:
+      type: string
+      title: Webhook Endpoint
+      description: Webhook URL for notifications
+      order: 10
+    format:
+      type: string
+      title: Format
+      description: Data delivery format
+      enum:
+        - json
+        - ndjson
+        - jsonl
+        - csv
+      default: json
+      order: 11
+    auth_header:
+      type: string
+      title: Webhook Auth Header
+      description: Authorization header for webhook delivery
+      order: 12
+    uncompressed_webhook:
+      type: boolean
+      title: Uncompressed Webhook
+      description: Send data uncompressed via webhook
+      default: false
+      order: 13
